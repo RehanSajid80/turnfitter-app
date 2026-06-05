@@ -25,6 +25,7 @@ type PublicSession = {
   starts_at: string;
   capacity: number;
   spots_left: number;
+  price: number | null;
 };
 
 export default async function PublicStudioPage({
@@ -45,7 +46,9 @@ export default async function PublicStudioPage({
 
   const { data: sessionData } = await supabase
     .from("public_sessions")
-    .select("id, slug, class_name, instructor_name, starts_at, capacity, spots_left")
+    .select(
+      "id, slug, class_name, instructor_name, starts_at, capacity, spots_left, price",
+    )
     .eq("slug", slug)
     .order("starts_at", { ascending: true })
     .limit(50);
@@ -141,6 +144,7 @@ export default async function PublicStudioPage({
                   <p className="mt-0.5 text-sm text-muted tabular-nums">
                     {fmtDay(s.starts_at)} · {fmtTime(s.starts_at)}
                     {s.instructor_name ? ` · ${s.instructor_name}` : ""}
+                    {s.price != null ? ` · £${Number(s.price).toFixed(2)}` : ""}
                   </p>
                   <span
                     className={

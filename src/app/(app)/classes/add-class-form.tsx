@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { addClass, type AddClassState } from "./actions";
 
 const initial: AddClassState = {};
@@ -13,52 +13,95 @@ const DAYS = [
   { v: 6, label: "Saturday" },
   { v: 0, label: "Sunday" },
 ];
-const inputCls =
-  "mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-900";
 
 export function AddClassForm() {
   const [state, action, pending] = useActionState(addClass, initial);
+  const [recurring, setRecurring] = useState(true);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state.ok) formRef.current?.reset();
+    if (state.ok) {
+      formRef.current?.reset();
+      setRecurring(true);
+    }
   }, [state.ok]);
 
   return (
-    <form
-      ref={formRef}
-      action={action}
-      className="rounded-2xl border border-neutral-200 bg-white p-6"
-    >
-      <h2 className="text-sm font-semibold">Add a class</h2>
+    <form ref={formRef} action={action} className="tf-card p-6">
+      <h2 className="font-display text-sm font-bold">Add a class</h2>
       <div className="mt-4 space-y-4">
-        <div>
-          <label htmlFor="class_name" className="text-sm font-medium">
-            Class name
-          </label>
-          <input
-            id="class_name"
-            name="class_name"
-            required
-            placeholder="Reformer Pilates"
-            className={inputCls}
-          />
-        </div>
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="weekday" className="text-sm font-medium">
-              Day
+            <label htmlFor="class_name" className="text-sm font-semibold">
+              Class name
             </label>
-            <select id="weekday" name="weekday" className={inputCls}>
-              {DAYS.map((d) => (
-                <option key={d.v} value={d.v}>
-                  {d.label}
-                </option>
-              ))}
-            </select>
+            <input
+              id="class_name"
+              name="class_name"
+              required
+              placeholder="Reformer Pilates"
+              className="tf-input"
+            />
           </div>
           <div>
-            <label htmlFor="start_time" className="text-sm font-medium">
+            <label htmlFor="instructor_name" className="text-sm font-semibold">
+              Instructor <span className="text-muted">(optional)</span>
+            </label>
+            <input
+              id="instructor_name"
+              name="instructor_name"
+              placeholder="Jess Bowen"
+              className="tf-input"
+            />
+          </div>
+        </div>
+
+        {/* Recurring toggle */}
+        <div>
+          <span className="text-sm font-semibold">Repeats?</span>
+          <div className="mt-2 inline-flex rounded-xl border border-line bg-white p-1">
+            <button
+              type="button"
+              onClick={() => setRecurring(true)}
+              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${recurring ? "bg-brand text-white" : "text-muted"}`}
+            >
+              Weekly
+            </button>
+            <button
+              type="button"
+              onClick={() => setRecurring(false)}
+              className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${!recurring ? "bg-brand text-white" : "text-muted"}`}
+            >
+              One-off
+            </button>
+          </div>
+          <input type="hidden" name="recurring" value={recurring ? "weekly" : "oneoff"} />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-4">
+          {recurring ? (
+            <div className="sm:col-span-2">
+              <label htmlFor="weekday" className="text-sm font-semibold">
+                Day
+              </label>
+              <select id="weekday" name="weekday" className="tf-input">
+                {DAYS.map((d) => (
+                  <option key={d.v} value={d.v}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="sm:col-span-2">
+              <label htmlFor="date" className="text-sm font-semibold">
+                Date
+              </label>
+              <input id="date" name="date" type="date" className="tf-input" />
+            </div>
+          )}
+          <div>
+            <label htmlFor="start_time" className="text-sm font-semibold">
               Time
             </label>
             <input
@@ -67,11 +110,11 @@ export function AddClassForm() {
               type="time"
               required
               defaultValue="18:00"
-              className={inputCls}
+              className="tf-input"
             />
           </div>
           <div>
-            <label htmlFor="capacity" className="text-sm font-medium">
+            <label htmlFor="capacity" className="text-sm font-semibold">
               Capacity
             </label>
             <input
@@ -81,21 +124,33 @@ export function AddClassForm() {
               min={1}
               required
               defaultValue={12}
-              className={inputCls}
+              className="tf-input"
             />
           </div>
         </div>
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-700 disabled:opacity-60"
-        >
+
+        <div className="sm:w-1/3">
+          <label htmlFor="price" className="text-sm font-semibold">
+            Price <span className="text-muted">(optional)</span>
+          </label>
+          <input
+            id="price"
+            name="price"
+            type="number"
+            min={0}
+            step="0.01"
+            placeholder="12.00"
+            className="tf-input"
+          />
+        </div>
+
+        <button type="submit" disabled={pending} className="tf-btn-primary">
           {pending ? "Adding…" : "Add class"}
         </button>
-        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+        {state.error && <p className="text-sm text-danger">{state.error}</p>}
         {state.ok && (
-          <p className="text-sm text-green-600">
-            Class added — 8 weeks of sessions created. ✅
+          <p className="text-sm font-medium text-reward-deep">
+            Class added — bookable sessions created. ✅
           </p>
         )}
       </div>
