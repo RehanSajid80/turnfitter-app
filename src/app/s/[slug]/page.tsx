@@ -62,57 +62,69 @@ export default async function PublicStudioPage({
     }).format(new Date(iso));
 
   return (
-    <main className="mx-auto max-w-xl px-4 py-10">
-      <header className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">{studio.name}</h1>
-        {studio.city && (
-          <p className="mt-1 text-sm text-neutral-500">{studio.city}</p>
-        )}
-        <p className="mt-3 text-sm text-neutral-500">Book a class below</p>
-      </header>
+    <main className="min-h-screen pb-16">
+      {/* Studio header band */}
+      <div
+        className="px-5 pb-12 pt-12 text-center text-white"
+        style={{
+          background:
+            "radial-gradient(700px 280px at 50% -30%, #6d28d9 0%, #4c1d95 70%)",
+        }}
+      >
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 font-display text-2xl font-bold ring-1 ring-white/20">
+          {studio.name.charAt(0).toUpperCase()}
+        </div>
+        <h1 className="mt-4 font-display text-3xl font-bold tracking-tight">
+          {studio.name}
+        </h1>
+        {studio.city && <p className="mt-1 text-sm text-violet-200">{studio.city}</p>}
+        <p className="mt-3 text-sm text-violet-100">Book a class below</p>
+      </div>
 
-      <div className="mt-8 space-y-3">
+      <div className="mx-auto -mt-6 max-w-xl space-y-3 px-4">
         {sessions.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-neutral-300 bg-white p-8 text-center text-sm text-neutral-500">
+          <div className="tf-card p-8 text-center text-sm text-muted">
             No upcoming classes scheduled right now — check back soon.
-          </p>
+          </div>
         ) : (
           sessions.map((s) => {
             const full = s.spots_left <= 0;
             return (
-              <div
-                key={s.id}
-                className="flex items-center justify-between rounded-2xl border border-neutral-200 bg-white p-4"
-              >
+              <div key={s.id} className="tf-card flex items-center justify-between p-4">
                 <div className="min-w-0">
-                  <p className="font-semibold">{s.class_name}</p>
-                  <p className="text-sm text-neutral-500">
+                  <p className="font-display text-base font-bold text-ink">
+                    {s.class_name}
+                  </p>
+                  <p className="mt-0.5 text-sm text-muted tabular-nums">
                     {fmtDay(s.starts_at)} · {fmtTime(s.starts_at)}
                     {s.instructor_name ? ` · ${s.instructor_name}` : ""}
                   </p>
-                  <p className="mt-0.5 text-xs text-neutral-400">
+                  <span
+                    className={
+                      full
+                        ? "tf-pill mt-2 bg-amber/15 text-amber"
+                        : "tf-pill mt-2 bg-reward/15 text-reward-deep"
+                    }
+                  >
                     {full ? "Class full" : `${s.spots_left} spots left`}
-                  </p>
+                  </span>
                 </div>
                 <Link
                   href={`/s/${slug}/book/${s.id}`}
-                  className={
-                    full
-                      ? "shrink-0 rounded-lg border border-neutral-300 px-4 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-                      : "shrink-0 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-700"
-                  }
+                  className={full ? "tf-btn-ghost shrink-0" : "tf-btn-primary shrink-0"}
                 >
-                  {full ? "Join waitlist" : "Book"}
+                  {full ? "Waitlist" : "Book"}
                 </Link>
               </div>
             );
           })
         )}
-      </div>
 
-      <p className="mt-10 text-center text-xs text-neutral-400">
-        Powered by TurnFitter
-      </p>
+        <p className="pt-6 text-center text-xs text-muted">
+          Powered by{" "}
+          <span className="font-display font-semibold text-ink">TurnFitter</span>
+        </p>
+      </div>
     </main>
   );
 }

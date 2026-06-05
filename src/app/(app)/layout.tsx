@@ -9,32 +9,34 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const studio = await getCurrentStudio();
 
   return (
-    <div className="min-h-screen bg-neutral-50">
-      <header className="border-b border-neutral-200 bg-white">
+    <div className="min-h-screen">
+      <header className="sticky top-0 z-10 border-b border-line bg-surface/80 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <Link href="/dashboard" className="font-bold tracking-tight">
-            TurnFitter
+          <Link href="/dashboard" className="font-display text-lg font-bold text-ink">
+            Turn<span className="text-brand">Fitter</span>
           </Link>
 
           {studio && (
-            <nav className="hidden items-center gap-5 text-sm text-neutral-600 sm:flex">
-              <Link href="/dashboard" className="hover:text-neutral-900">
-                Dashboard
-              </Link>
-              <Link href="/classes" className="hover:text-neutral-900">
-                Classes
-              </Link>
-              <Link href="/schedule" className="hover:text-neutral-900">
-                Schedule
-              </Link>
-              <Link href="/settings" className="hover:text-neutral-900">
-                Settings
-              </Link>
+            <nav className="hidden items-center gap-1 text-sm font-medium text-muted sm:flex">
+              {[
+                ["/dashboard", "Dashboard"],
+                ["/classes", "Classes"],
+                ["/schedule", "Schedule"],
+                ["/settings", "Settings"],
+              ].map(([href, label]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="rounded-lg px-3 py-1.5 hover:bg-brand-soft hover:text-brand"
+                >
+                  {label}
+                </Link>
+              ))}
             </nav>
           )}
 
           <form action={signOut}>
-            <button className="text-sm text-neutral-500 hover:text-neutral-900">
+            <button className="text-sm font-medium text-muted hover:text-ink">
               Sign out
             </button>
           </form>
