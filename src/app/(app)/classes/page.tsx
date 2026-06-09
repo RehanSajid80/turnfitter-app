@@ -25,6 +25,16 @@ export default async function ClassesPage() {
     .order("created_at", { ascending: true });
   const classes = (data as ClassRow[] | null) ?? [];
 
+  const { data: staffData } = await supabase
+    .from("gym_staff")
+    .select("name")
+    .eq("gym_id", studio.id)
+    .eq("is_active", true)
+    .order("name", { ascending: true });
+  const instructors = ((staffData as { name: string }[] | null) ?? []).map(
+    (s) => s.name,
+  );
+
   return (
     <div className="space-y-8">
       <div>
@@ -66,7 +76,7 @@ export default async function ClassesPage() {
         )}
       </section>
 
-      <AddClassForm />
+      <AddClassForm instructors={instructors} />
     </div>
   );
 }

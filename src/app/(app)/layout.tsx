@@ -22,6 +22,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
                 ["/dashboard", "Dashboard"],
                 ["/classes", "Classes"],
                 ["/schedule", "Schedule"],
+                ["/staff", "Staff"],
                 ["/settings", "Settings"],
               ].map(([href, label]) => (
                 <Link

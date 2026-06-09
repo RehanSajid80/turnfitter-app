@@ -14,7 +14,7 @@ const DAYS = [
   { v: 0, label: "Sunday" },
 ];
 
-export function AddClassForm() {
+export function AddClassForm({ instructors }: { instructors: string[] }) {
   const [state, action, pending] = useActionState(addClass, initial);
   const [recurring, setRecurring] = useState(true);
   const formRef = useRef<HTMLFormElement>(null);
@@ -47,12 +47,23 @@ export function AddClassForm() {
             <label htmlFor="instructor_name" className="text-sm font-semibold">
               Instructor <span className="text-muted">(optional)</span>
             </label>
-            <input
-              id="instructor_name"
-              name="instructor_name"
-              placeholder="Jess Bowen"
-              className="tf-input"
-            />
+            {instructors.length > 0 ? (
+              <select id="instructor_name" name="instructor_name" className="tf-input" defaultValue="">
+                <option value="">— None —</option>
+                {instructors.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                id="instructor_name"
+                name="instructor_name"
+                placeholder="Add team in Staff to pick here"
+                className="tf-input"
+              />
+            )}
           </div>
         </div>
 
